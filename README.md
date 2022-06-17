@@ -7,6 +7,7 @@ Steps to follow:
 3. Setup your circuits as depicted in the proteus simulation, load the compiled code onto your microcontroller, power it... you done!
 
 #other features can be integrated with this project for future work, any one can try it.
+for more check out the story on medium: https://medium.com/@yintar5/automatic-temperature-controller-atc-for-various-purpose-by-using-c-programming-language-98950640355c
 
 May, 2021   @AASTU, Addis Ababa, Ethiopia.
  
