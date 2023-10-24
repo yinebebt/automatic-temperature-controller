@@ -1,7 +1,7 @@
 # Automatic temperature controller(ATC) 
 
 ## Description
-Source code of ATC written with C - programming language; targeted for **PIC18F43K22** microcontroller.
+Source code of ATC written with C - programming language; targeted for [PIC18F43K22](https://www.microchip.com/en-us/product/pic18f43k22) microcontroller.
 
 This project is a good starting point on embedded system programming.
 
