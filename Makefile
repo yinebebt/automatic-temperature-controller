@@ -1,3 +1,4 @@
+# Note: This makefile is not used yet.
 #
 #  There exist several targets which are by default empty and which can be 
 #  used for execution of your targets. These targets are usually executed 
@@ -104,10 +105,3 @@ help: .help-post
 .help-post: .help-impl
 # Add your post 'help' code here...
 
-
-
-# include project implementation makefile
-include nbproject/Makefile-impl.mk
-
-# include project make variables
-include nbproject/Makefile-variables.mk
