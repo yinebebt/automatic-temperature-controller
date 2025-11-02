@@ -1,36 +1,29 @@
+/**
+ * adc.c - 10-bit ADC for LM35 temperature sensor (AN0)
+ * Config: 10-bit, right-justified, Vref=VDD(5V), FOSC/2
+ */
+#include <xc.h>
 #include <stdbool.h>
-#include <xc.h> // include processor files - each processor file is guarded.  
-#include <stdbool.h>
-#define _XTAL_FREQ 8000000                 //Useful for __delay_ms() function 
-void ADC_Initialize(void){
-    // set the ADC to the options selected in the User Interface
-    
-    // TRIGSEL CCP5; NVCFG VSS; PVCFG VDD; 
-    ADCON1 = 0x00;
-    
-    // ADFM right; ACQT 2; ADCS FOSC/2; 
-    ADCON2 = 0x88;
-    
-    // ADRESL 0; 
+
+#define _XTAL_FREQ 8000000
+
+void ADC_Initialize(void) {
+    ADCON1 = 0x00;  // Vref: VDD/VSS
+    ADCON2 = 0x88;  // Right-justified, 2 TAD acquisition, FOSC/2
     ADRESL = 0x00;
-    
-    // ADRESH 0; 
     ADRESH = 0x00;
-    
-    // GO_nDONE stop; ADON enabled; CHS AN0; 
-    ADCON0 = 0x01;
-    
+    ADCON0 = 0x01;  // Enable ADC, select AN0
 }
-int ADC_GetConversionResult(void)
-{
-    // Conversion finished, return the result
-     return ((int)((ADRESH << 8) + ADRESL));
+
+int ADC_GetConversionResult(void) {
+    return ((int)((ADRESH << 8) + ADRESL));
 }
-void Delay_Seconds(unsigned char z)
-{
-    unsigned char x,y;
-    for(y = 0; y < z; y++)
-    {
-        for(x = 0; x <  10; x++)__delay_ms(10);
+
+void Delay_Seconds(unsigned char z) {
+    unsigned char x, y;
+    for (y = 0; y < z; y++) {
+        for (x = 0; x < 100; x++) {
+            __delay_ms(10);
+        }
     }
 }

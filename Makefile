@@ -1,107 +1,68 @@
-# Note: This makefile is not used yet.
-#
-#  There exist several targets which are by default empty and which can be 
-#  used for execution of your targets. These targets are usually executed 
-#  before and after some main targets. They are: 
-#
-#     .build-pre:              called before 'build' target
-#     .build-post:             called after 'build' target
-#     .clean-pre:              called before 'clean' target
-#     .clean-post:             called after 'clean' target
-#     .clobber-pre:            called before 'clobber' target
-#     .clobber-post:           called after 'clobber' target
-#     .all-pre:                called before 'all' target
-#     .all-post:               called after 'all' target
-#     .help-pre:               called before 'help' target
-#     .help-post:              called after 'help' target
-#
-#  Targets beginning with '.' are not intended to be called on their own.
-#
-#  Main targets can be executed directly, and they are:
-#  
-#     build                    build a specific configuration
-#     clean                    remove built files from a configuration
-#     clobber                  remove all built files
-#     all                      build all configurations
-#     help                     print help mesage
-#  
-#  Targets .build-impl, .clean-impl, .clobber-impl, .all-impl, and
-#  .help-impl are implemented in nbproject/makefile-impl.mk.
-#
-#  Available make variables:
-#
-#     CND_BASEDIR                base directory for relative paths
-#     CND_DISTDIR                default top distribution directory (build artifacts)
-#     CND_BUILDDIR               default top build directory (object files, ...)
-#     CONF                       name of current configuration
-#     CND_ARTIFACT_DIR_${CONF}   directory of build artifact (current configuration)
-#     CND_ARTIFACT_NAME_${CONF}  name of build artifact (current configuration)
-#     CND_ARTIFACT_PATH_${CONF}  path to build artifact (current configuration)
-#     CND_PACKAGE_DIR_${CONF}    directory of package (current configuration)
-#     CND_PACKAGE_NAME_${CONF}   name of package (current configuration)
-#     CND_PACKAGE_PATH_${CONF}   path to package (current configuration)
-#
-# NOCDDL
+# Makefile for PIC18F43K22 Temperature Controller
+# Requires XC8 compiler: https://www.microchip.com/mplab/compilers
 
+MCU = 18F43K22
+TARGET = atc
+SRCS = src/main.c src/lcd.c src/adc.c src/keypd.c
+HEX = $(TARGET).hex
 
-# Environment 
-MKDIR=mkdir
-CP=cp
-CCADMIN=CCadmin
-RANLIB=ranlib
+# Check if XC8 is installed
+XC8 := $(shell which xc8-cc 2>/dev/null)
 
+# Compiler flags (if XC8 available)
+CFLAGS = -mcpu=$(MCU) -O2 --warn=-3 --chip=$(MCU)
 
-# build
-build: .build-post
+.PHONY: all clean program help
 
-.build-pre:
-# Add your pre 'build' code here...
+# Default: check if compiler exists
+all:
+	@if [ -z "$(XC8)" ]; then \
+		echo "Error: XC8 compiler not found"; \
+		echo ""; \
+		echo "Options:"; \
+		echo "  1. Install XC8: https://www.microchip.com/mplab/compilers"; \
+		echo "  2. Use MPLAB X IDE (recommended)"; \
+		echo ""; \
+		exit 1; \
+	else \
+		$(MAKE) build; \
+	fi
 
-.build-post: .build-impl
-# Add your post 'build' code here...
+# Build hex file (only if XC8 available)
+build: $(SRCS)
+	xc8-cc $(CFLAGS) -o$(TARGET) $(SRCS)
+	@echo ""
+	@echo "✓ Build complete: $(HEX)"
+	@echo "  Program with: make program"
 
+# Clean build artifacts
+clean:
+	@rm -f $(TARGET).* *.p1 *.d *.pre *.sym *.cmf *.cof *.lst *.rlf *.sdb *.obj
+	@rm -rf build dist funclist *.o .generated_files
+	@echo "✓ Clean complete"
 
-# clean
-clean: .clean-post
+# Program PIC (requires PICkit and hex file)
+program:
+	@if [ ! -f "$(HEX)" ]; then \
+		echo "Error: $(HEX) not found. Run 'make' first"; \
+		exit 1; \
+	fi
+	@echo "Programming $(MCU)..."
+	@pk2cmd -P$(MCU) -F$(HEX) -M -R || \
+		echo "Note: Requires PICkit programmer connected"
 
-.clean-pre:
-# Add your pre 'clean' code here...
-# WARNING: the IDE does not call this target since it takes a long time to
-# simply run make. Instead, the IDE removes the configuration directories
-# under build and dist directly without calling make.
-# This target is left here so people can do a clean when running a clean
-# outside the IDE.
-
-.clean-post: .clean-impl
-# Add your post 'clean' code here...
-
-
-# clobber
-clobber: .clobber-post
-
-.clobber-pre:
-# Add your pre 'clobber' code here...
-
-.clobber-post: .clobber-impl
-# Add your post 'clobber' code here...
-
-
-# all
-all: .all-post
-
-.all-pre:
-# Add your pre 'all' code here...
-
-.all-post: .all-impl
-# Add your post 'all' code here...
-
-
-# help
-help: .help-post
-
-.help-pre:
-# Add your pre 'help' code here...
-
-.help-post: .help-impl
-# Add your post 'help' code here...
-
+# Show help
+help:
+	@echo "Makefile for PIC18F43K22 Temperature Controller"
+	@echo ""
+	@echo "Targets:"
+	@echo "  make         - Build hex file (requires XC8)"
+	@echo "  make clean   - Remove build files"
+	@echo "  make program - Flash to PIC (requires PICkit)"
+	@echo ""
+	@echo "Requirements:"
+	@echo "  XC8 compiler: https://www.microchip.com/mplab/compilers"
+	@echo "  MPLAB X IDE: https://www.microchip.com/mplab/mplab-x-ide"
+	@echo ""
+	@echo "Without XC8:"
+	@echo "  Use MPLAB X IDE for compilation (recommended)"
